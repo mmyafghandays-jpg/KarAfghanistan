@@ -27,19 +27,32 @@ jobs:
 
       - name: Extract Android project
         run: |
-          mkdir extracted
+          mkdir -p extracted
           unzip -q *.zip -d extracted
-          echo "Project contents:"
-          find extracted -maxdepth 3 -type f | head -50
+
+          echo "Extracted files:"
+          find extracted -maxdepth 3 -type f | head -100
+
+      - name: Check Android project
+        run: |
+          echo "Checking project..."
+          ls -la extracted/KarAfghanistanFirebase
+          echo "Gradle files:"
+          find extracted/KarAfghanistanFirebase -maxdepth 2 -type f \( -name "*.gradle" -o -name "*.gradle.kts" \) -print
 
       - name: Build APK
         working-directory: extracted/KarAfghanistanFirebase
         run: |
-          gradle assembleDebug --no-daemon
-    
+          gradle assembleDebug --no-daemon -Pkotlin.jvm.target.validation.mode=warning
+
+      - name: Check APK
+        run: |
+          echo "Searching for APK..."
+          find extracted/KarAfghanistanFirebase -type f -name "*.apk" -print
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: KarAfghanistan-APK
           path: extracted/KarAfghanistanFirebase/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
