@@ -35,8 +35,8 @@ jobs:
       - name: Build APK
         working-directory: extracted/KarAfghanistanFirebase
         run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon
+    
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
